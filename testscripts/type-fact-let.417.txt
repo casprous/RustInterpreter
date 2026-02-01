@@ -1,0 +1,9 @@
+{
+    // Variable 'fact' is a function (:int -> :int), not just an :int
+    def fact (:int -> :int) = fn(n :int) :int {
+       if ==(n, 0) then 1
+       else mul(n, fact(sub(n, 1)))
+    };
+
+    fact(6)
+}

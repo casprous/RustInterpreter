@@ -1,0 +1,51 @@
+{
+    //  Bank Account Factory 
+    // Takes an initial balance (:int).
+    // Returns a function (Closure) that takes a command (:str) and amount (:int).
+    // The returned function modifies the captured 'balance'.
+
+    def make_account ( :int -> ( :str :int -> :str ) ) = // Changed int to str
+      fn(balance :int) ( :str :int -> :int ) {
+        
+        // This inner function captures 'balance' from the outer scope.
+        // Because function parameters in our interpreter are Cells (RefCell),
+        // we can assign to 'balance' directly to update the state.
+        
+        fn(cmd :str, amt :int) :int {
+            if ==(cmd, "deposit") then {
+                balance = add(balance, amt);
+                print("Deposited ", amt, "New Balance: ", balance);
+                balance
+            } else {
+                if ==(cmd, "withdraw") then {
+                    if >=(balance, amt) then {
+                        balance = sub(balance, amt);
+                        print("Withdrew ", amt, "New Balance: ", balance);
+                        balance
+                    } else {
+                        print("Insufficient funds. Balance: ", balance);
+                        -1
+                    }
+                } else {
+                    print("Unknown command: ", cmd);
+                    -100
+                }
+            }
+        }
+      };
+
+    // Demo Execution
+
+    // Open an account with 100 currency units
+    let my_acc ( :str :int -> :int ) = make_account(100);
+
+    print("Starting Bank Transaction Log");
+
+    // Perform transactions
+    // Note: The return values (70, 120, etc.) are printed by the interpreter automatically.
+    
+    my_acc("withdraw", 30);   // Should succeed -> 70
+    my_acc("deposit", 50);    // Should succeed -> 120
+    my_acc("withdraw", 200);  // Should fail    -> -1
+    my_acc("withdraw", 120)   // Should succeed -> 0
+}

@@ -1,0 +1,10 @@
+// bar should get the value add(1,1), i.e. 2
+
+{
+    let foo = 100;
+    let bar = {
+        foo = 1;
+        add(foo, foo)
+    };
+    bar
+}

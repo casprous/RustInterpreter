@@ -1,0 +1,6 @@
+// Should fail because 'foo' is not in the initial environment and is
+// not bound in this program
+
+{
+    foo = true
+}

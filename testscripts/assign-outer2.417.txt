@@ -1,0 +1,11 @@
+// foo should have the value 1, which was assigned when 'bar'
+// was evaluated
+
+{
+    let foo = 100;
+    let bar = {
+        foo = 1;
+        add(foo, foo)
+    };
+    foo
+}

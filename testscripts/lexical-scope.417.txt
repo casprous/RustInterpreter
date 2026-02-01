@@ -1,0 +1,20 @@
+// lexical-scope.417
+
+{ 
+    let k = 10000;
+
+    // f refers to the binding above for the variable 'k'
+
+    let f = fn(n) {add(n, k)}; 
+
+    // The function body of g() defines 'k' as a local variable.
+    // Under lexical scope rules, the 'k' used in f(n) is NOT the one
+    // defined in g().
+  
+    let g = fn() {let k = 1; f(5)};
+
+    g()
+}
+
+// ==> 10005
+

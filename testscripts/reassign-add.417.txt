@@ -1,0 +1,11 @@
+{
+    // 'add' is initially bound in the environment.
+    // 'mul' has the same type: (:int :int -> :int)
+    
+    // Reassign 'add' to be 'mul'
+    add = mul;
+    
+    // Now calling 'add(2, 3)' should actually multiply them
+    // Result should be 6, not 5
+    add(2, 3)
+}

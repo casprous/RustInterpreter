@@ -1,0 +1,169 @@
+{
+// This program is a parser written in the .417 language for a
+// lexically-scoped interpreter with static type checking.
+
+// Define JSON constants (Typed as :str)
+let LBRACE :str = "{"; {
+let RBRACE :str = "}"; {
+let COLON :str = ":"; {
+let COMMA :str = ","; {
+let LBRACK :str = "["; {
+let RBRACK :str = "]"; {
+
+// Define Helper Functions
+let quote (:str -> :str) = fn(s :str) :str {
+    concat(dquote(), s, dquote())
+}; {
+
+// Define Mutually Recursive Parser Functions
+// All 'def's are in a *single block*.
+// We removed the 'self' argument from recursive functions because 'def'
+// handles recursion natively now.
+{
+    // ltrim (Recursion)
+    // Recurses to skip spaces.
+    def ltrim_rec (:str :int -> :str) = fn(s :str, index :int) :str {
+        if ==(index, len(s)) then
+            "" 
+        else {
+            let char :str = substring(s, index, 1); {
+                if ==(char, " ") then
+                    ltrim_rec(s, add(index, 1)) // Recursive call
+                else
+                    substring(s, index, sub(len(s), index))
+            }
+        }
+    };
+
+    def ltrim (:str -> :str) = fn(s :str) :str {
+        ltrim_rec(s, 0)
+    };
+
+    // findTopLevelComma
+    // Scans string, tracking paren depth.
+    def findCommaRec (:str :int :int -> :int) = fn(argsStr :str, index :int, parenDepth :int) :int {
+        if ==(index, len(argsStr)) then
+            -1 // Not found
+        else {
+            let char :str = substring(argsStr, index, 1); {
+                if ==(char, "(") then
+                    findCommaRec(argsStr, add(index, 1), add(parenDepth, 1))
+                else {
+                    if ==(char, ")") then
+                        findCommaRec(argsStr, add(index, 1), sub(parenDepth, 1))
+                    else {
+                        if ==(char, COMMA) then {
+                            if ==(parenDepth, 0) then
+                                index // Found it!
+                            else
+                                findCommaRec(argsStr, add(index, 1), parenDepth) // Nested comma
+                        }
+                        else
+                            findCommaRec(argsStr, add(index, 1), parenDepth) // Keep scanning
+                    }
+                }
+            }
+        }
+    };
+
+    def findTopLevelComma (:str -> :int) = fn(argsStr :str) :int {
+        findCommaRec(argsStr, 0, 0)
+    };
+
+    // Base Case Parsers
+    def parseNumber (:str -> :str) = fn(operandStr :str) :str {
+        concat(
+            LBRACE,
+            quote("Number"),
+            COLON,
+            operandStr,
+            RBRACE
+        )
+    };
+
+    def parseIdentifier (:str -> :str) = fn(identStr :str) :str {
+        concat(
+            LBRACE,
+            quote("Identifier"),
+            COLON,
+            quote(identStr),
+            RBRACE
+        )
+    };
+
+    // parseExpression
+    // Dispatches to Number, Identifier, or Application
+    def parseExpression (:str -> :str) = fn(exprStr :str) :str {
+        let trimmedStr :str = ltrim(exprStr); { 
+            let openParenIndex :int = indexOf(trimmedStr, "("); {
+                if ==(openParenIndex, -1) then {
+                    // No '(': it's a number or the COMMA identifier
+                    if ==(trimmedStr, "COMMA") then 
+                        parseIdentifier(trimmedStr)
+                    else
+                        parseNumber(trimmedStr)
+                }
+                else
+                    parseApplication(trimmedStr) // It's a nested application
+            }
+        }
+    };
+    
+    // parseArgs
+    def parseArgsImpl (:str -> :str) = fn(argsStr :str) :str {
+        let commaIndex :int = findTopLevelComma(argsStr); {
+            if ==(commaIndex, -1) then
+                // Last argument
+                parseExpression(argsStr)
+            else
+                // Comma found: Parse head, recurse on tail
+                {
+                    let firstArg :str = substring(argsStr, 0, commaIndex); {
+                        let restOfArgs :str = substring(argsStr, add(commaIndex, 1), sub(len(argsStr), add(commaIndex, 1))); {
+                            concat(
+                                parseExpression(firstArg),
+                                COMMA,
+                                parseArgsImpl(restOfArgs) // Recursive call
+                            )
+                        }
+                    }
+                }
+        }
+    };
+
+    def parseArgs (:str -> :str) = fn(argsStr :str) :str {
+        if ==(len(argsStr), 0) then
+            "" 
+        else
+            parseArgsImpl(argsStr)
+    };
+
+    // parseApplication
+    def parseApplication (:str -> :str) = fn(inputStr :str) :str {
+        let openParenIndex :int = indexOf(inputStr, "("); {
+        let closeParenIndex :int = sub(len(inputStr), 1); {
+        let operator :str = substring(inputStr, 0, openParenIndex); {
+        let argsStr :str = substring(inputStr, add(openParenIndex, 1), sub(sub(closeParenIndex, openParenIndex), 1)); {
+            // Assemble JSON
+            concat(
+                LBRACE,
+                quote("Application"), COLON, LBRACE,
+                    quote("Operator"), COLON, LBRACE,
+                        quote("Identifier"), COLON, quote(operator),
+                    RBRACE, COMMA,
+                    quote("Operands"), COLON, LBRACK,
+                    
+                    parseArgs(argsStr),
+                    
+                    RBRACK,
+                RBRACE,
+                RBRACE
+            )
+        } } } }
+    };
+
+    // Run the parser
+    parseApplication("print(div(add(mul(5, -1), sqrt(sub(pow(5, 2), mul(4, mul(1, 4))))), mul(2, 1)), div(sub(mul(5, -1), sqrt(sub(pow(5, 2), mul(4, mul(1, 4))))), mul(2, 1)))")
+}
+} } } } } } }
+}

@@ -1,0 +1,21 @@
+{
+  def even = fn(i) {
+      if ==(i, 0) then true
+      else odd(sub(i, 1))  // Call to odd is fine during definition
+  };
+  
+  // Call will fail
+  print("Attempting to call even(10) before odd is defined...");
+  print(even(10));
+
+
+  // Definition will never be reached
+  def odd = fn(i) {
+      if ==(i, 0) then false
+      else even(sub(i, 1))
+  };
+
+  // These lines will also not be reached
+  print("Is 10 odd?", odd(10));
+  print("Is 20 even?", even(20))
+}

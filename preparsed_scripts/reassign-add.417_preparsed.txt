@@ -1,0 +1,1 @@
+{"Block": [{"Assignment": {"Identifier": "add", "Expression": {"Identifier": "mul"}}}, {"Application": {"Operator": {"Identifier": "add"}, "Operands": [{"Number": 2}, {"Number": 3}]}}]}

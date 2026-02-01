@@ -1,0 +1,25 @@
+// fact-cp3.417
+//
+// Factorial  using a  helper function,  coded so  that it  works with
+// lexical scope.  Note  that there are two copies  of factorial here,
+// because it  is based on the  version shown in class  that uses only
+// anonymous functions.
+
+{
+    let fact_also =
+        fn(n, f) {
+            if ==(n, 0) then 1
+            else mul(n, f(sub(n, 1), f))
+        };
+
+    let fact =
+        fn(k) {
+            fact_also(k, fact_also)
+        };
+
+    fact(12)
+}
+    
+    
+     
+

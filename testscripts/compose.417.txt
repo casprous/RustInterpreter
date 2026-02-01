@@ -1,0 +1,18 @@
+{
+    def inc ( :int -> :int ) = fn(x :int) :int { add(x, 1) };
+    
+    def double ( :int -> :int ) = fn(x :int) :int { mul(x, 2) };
+    
+    def square ( :int -> :int ) = fn(x :int) :int { sqr(x) };
+
+    def compose ( ( :int -> :int ) ( :int -> :int ) -> ( :int -> :int ) ) = 
+        fn(f ( :int -> :int ), g ( :int -> :int )) ( :int -> :int ) {
+            fn(n :int) :int {
+                f(g(n))
+            }
+        };
+
+    let h ( :int -> :int ) = compose(square, inc);
+
+    h(10)
+}

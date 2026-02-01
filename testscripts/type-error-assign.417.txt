@@ -1,0 +1,9 @@
+{
+    // Bind 's' as a string
+    let s :str = "Hello"; 
+    
+    // Attempt to assign an integer to 's'
+    s = 123;
+    
+    s
+}

@@ -1,0 +1,89 @@
+{
+// This program is a parser written in the .417 language for a
+// lexically-scoped interpreter. It takes a string like "func(arg1,arg2)"
+// and outputs a JSON string that can be fed back into the interpreter.
+
+// It uses a nested block structure `let x = ...; { ... }` because the 
+// `parse` tool requires every `let` to be followed by a block.
+
+// --- 1. Define JSON constants ---
+let LBRACE = "{"; {
+let RBRACE = "}"; {
+let COLON = ":"; {
+let COMMA = ","; {
+let LBRACK = "["; {
+let RBRACK = "]"; {
+
+// --- 2. Define Helper Functions ---
+
+// Wraps a given string 's' in double quotes.
+let quote = fn(s) {
+    concat(dquote(), s, dquote())
+}; {
+
+// Parses a single operand string into '{"Number": ...}' format.
+let parseOperand = fn(operandStr) {
+    concat(
+        LBRACE,
+        quote("Number"),
+        COLON,
+        operandStr,
+        RBRACE
+    )
+}; {
+
+// Helper for recursion in lexical scope. This function takes itself
+// as the 'self' argument to perform the recursive call.
+let parseArgsImpl = fn(self, argsStr) {
+    let commaIndex = indexOf(argsStr, COMMA);
+    if ==(commaIndex, -1) then
+        // Base Case: No comma, so this is the only/last argument.
+        parseOperand(argsStr)
+    else
+        // Recursive Step: Comma found. Parse first arg, then recurse.
+        {
+            let firstArg = substring(argsStr, 0, commaIndex); {
+                let restOfArgs = substring(argsStr, add(commaIndex, 1), sub(len(argsStr), add(commaIndex, 1))); {
+                    concat(
+                        parseOperand(firstArg),
+                        COMMA,
+                        self(self, restOfArgs) // Recursive call using 'self'
+                    )
+                }
+            }
+        }
+}; {
+
+// This wrapper function starts the recursion for parseArgs.
+let parseArgs = fn(argsStr) {
+    parseArgsImpl(parseArgsImpl, argsStr)
+}; {
+
+// --- 3. Define the Main Parser Function ---
+let parseApplication = fn(inputStr) {
+    let openParenIndex = indexOf(inputStr, "("); {
+    let closeParenIndex = sub(len(inputStr), 1); {
+    let operator = substring(inputStr, 0, openParenIndex); {
+    let argsStr = substring(inputStr, add(openParenIndex, 1), sub(sub(closeParenIndex, openParenIndex), 1)); {
+        // Assemble the final JSON output string.
+        concat(
+            LBRACE,
+                quote("Application"), COLON, LBRACE,
+                    quote("Operator"), COLON, LBRACE,
+                        quote("Identifier"), COLON, quote(operator),
+                    RBRACE, COMMA,
+                    quote("Operands"), COLON, LBRACK,
+                        parseArgs(argsStr),
+                    RBRACK,
+                RBRACE,
+            RBRACE
+        )
+    } } } }
+}; {
+
+// --- 4. Run the parser ---
+parseApplication(">=(5,5)")
+
+} } } } } } } } } } }
+
+}

@@ -1,0 +1,20 @@
+// Should print 1 2 3 4 5 (possibly on separate lines, depending on
+// 'print' implementation).
+//
+// Return value is 'null' because 'print' returns no useful value.
+
+{
+    let count = {
+        let n = 0;
+        fn() {
+            n = add(n, 1);
+            n
+        }
+    };
+
+    print(count());
+    print(count());
+    print(count());
+    print(count());
+    print(count())
+}

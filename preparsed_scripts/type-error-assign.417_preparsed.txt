@@ -1,0 +1,1 @@
+{"Block": [{"Let": {"Parameter": {"Name": "s", "Type": ":str"}, "Expression": {"String": "Hello"}, "Block": [{"Assignment": {"Identifier": "s", "Expression": {"Number": 123}}}, {"Identifier": "s"}]}}]}
