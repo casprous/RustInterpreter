@@ -1,0 +1,5 @@
+# .cargo/config.toml
+
+# Set default stack size to 8MB (8 * 1024 * 1024) for Windows builds
+[target.'cfg(windows)']
+rustflags = ["-C", "link-args=/STACK:8388608"]

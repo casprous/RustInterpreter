@@ -72,7 +72,7 @@ Execution is handled via the `run.sh` script, which pipes stdin through the type
 
 ### Running Without the External Parser
 
-If you do not have the parse tool installed, you can use the pre-parsed JSON ASTs located in the `preparsed_scripts/` directory. You must pipe the file contents into the runner (do not try to execute the text file directly)..
+If you do not have the parse tool installed, you can use the pre-parsed JSON ASTs located in the `preparsed_scripts/` directory. You must pipe the file contents into the runner (do not try to execute the text file directly).
 
 **Using cat:**
 

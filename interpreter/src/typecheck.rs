@@ -52,6 +52,7 @@ impl std::fmt::Display for Type {
 // AST Definitions (Mirrors main.rs but specialized for Type Parsing)
 
 #[derive(Deserialize, Debug, Clone)]
+#[allow(dead_code)]
 enum Expression {
     Identifier(String),
     String(String),
